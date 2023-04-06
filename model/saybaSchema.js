@@ -23,5 +23,23 @@ const saybaGroupFormSchema = new mongoose.Schema({
   },
 });
 
+const saybaGroupPropertySchema = new mongoose.Schema({
+  name: String,
+  developer: String,
+  state: String,
+  city: String,
+  possession: String,
+  price: String,
+  class: String,
+  images: Object,
+  amenities: Object,
+  area: Object,
+  config: Object,
+});
+
 const saybaGroupForm = mongoose.model("saybaGroupForm", saybaGroupFormSchema);
-module.exports = saybaGroupForm;
+const saybaGroupProperty = mongoose.model(
+  "saybaGroupProperty",
+  saybaGroupPropertySchema
+);
+module.exports = { saybaGroupForm, saybaGroupProperty };
