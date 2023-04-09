@@ -2,7 +2,7 @@ const router = require("express").Router();
 const {
   nightsuitproducts,
   nightsuituser,
-  nightsuitaddress,
+  // nightsuitaddress,
   nightsuitcoupon,
 } = require("../model/nightsuitSchema");
 const multer = require("multer");
@@ -94,58 +94,121 @@ router.post("/api/login/nightsuit/user", async (req, res) => {
   if (!userExist) {
     return res.status(422).json({ message: "User does not exist" });
   }
-  if (userExist) {
-    if (userExist.password !== password) {
-      return res
-        .status(422)
-        .json({ message: "Invalid email address or password" });
-    } else {
-      const token = await userExist.generateToken();
-      res.status(200).json({ email: email, password: password, token: token });
-    }
+  if (userExist && userExist.password !== password) {
+    return res
+      .status(422)
+      .json({ message: "Invalid email address or password" });
+  }
+  const token = await userExist.generateToken();
+  res.cookie("nightsuituser", token, {
+    expires: new Date(Date.now() + 2589200000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    name: userExist.name,
+    email: userExist.email,
+    mobile: userExist.mobile,
+    token: token,
+    message: "Login successful",
+  });
+});
+
+router.post("/api/auth/nightsuit/user", async (req, res) => {
+  const { email, token } = req.body;
+  if (!email || !token) {
+    return res
+      .status(422)
+      .json({ message: "Authentication failed. Please login." });
+  }
+  const userExist = await nightsuituser.findOne({ email: email });
+  if (!userExist) {
+    return res
+      .status(422)
+      .json({ message: "Authentication failed. Please login." });
+  }
+  if (userExist.token !== token) {
+    return res
+      .status(422)
+      .json({ message: "Authentication failed. Please login." });
+  } else {
+    res.status(200).json(userExist);
   }
 });
 
 //
 router.post("/api/post/nightsuit/address", async (req, res) => {
-  const { id, name, email, mobile, house, state, city, landmark, pincode } =
-    req.body;
-  if (!house || !state || !city || !pincode) {
-    return res.status(422).json({ message: "Enter complete details" });
+  const { email, token, house, state, city, landmark, pincode } = req.body;
+  const userExist = await nightsuituser.findOne({ email: email });
+  if (!email || !token) {
+    return res
+      .status(401)
+      .json({ message: "Authentication failed. Please login.1" });
+  }
+  if (!userExist) {
+    return res
+      .status(401)
+      .json({ message: "Authentication failed. Please login.2" });
+  }
+  if (userExist.token !== token) {
+    return res
+      .status(401)
+      .json({ message: "Authentication failed. Please login.3" });
+  } else {
+    if (!house || !state || !city || !pincode) {
+      return res.status(422).json({ message: "Enter complete details" });
+    } else {
+      try {
+        const newAddress = await userExist.postAddress(
+          email,
+          house,
+          state,
+          city,
+          landmark,
+          pincode
+        );
+        res.status(200).json({ message: "Address saved", address: newAddress });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+});
+
+router.post("/api/get/nightsuit/address", async (req, res) => {
+  const { email, token } = req.body;
+  const userExist = await nightsuituser.findOne({ email: email });
+  if (!email || !token) {
+    return res.status(401).json({ message: "Please login to add address." });
+  }
+  if (!userExist) {
+    return res
+      .status(401)
+      .json({ message: "Authentication failed. Please login to get address." });
+  }
+  if (userExist.token !== token) {
+    return res
+      .status(401)
+      .json({ message: "Authentication failed. Please login to get address." });
   } else {
     try {
-      const newAddress = new nightsuitaddress({
-        house,
-        state,
-        city,
-        landmark,
-        pincode,
-      });
-      await newAddress.save();
-      res.status(200).json({ message: "Address saved" });
+      res.status(200).json(userExist);
     } catch (error) {
       console.log(error);
     }
   }
 });
 
-router.get("/api/get/nightsuit/address", async (req, res) => {
-  const addressList = await nightsuitaddress.find();
-  if (addressList) {
-    res.status(200).json(addressList);
-  } else {
-    return res.status(422).json({ message: "Failed to fetch Address" });
-  }
-});
-
 router.delete("/api/delete/nightsuit/address", async (req, res) => {
-  const { id } = req.body;
-  try {
-    await nightsuitaddress.findByIdAndDelete(id);
-    res.status(200).json({ message: "Address deleted" });
-  } catch (error) {
-    console.log(error);
-  }
+  const { email, house } = req.body;
+  const userExist = await nightsuituser.findOne({ email: email });
+  const filtered = userExist.address.filter((item) => {
+    return (
+      item.house.replace(/\s/g, "").toLowerCase() !==
+      house.replace(/\s/g, "").toLowerCase()
+    );
+  });
+  const updated = await userExist.deleteAddress(filtered);
+  res.status(200).json({ message: "Äddress deleted" });
 });
 
 //

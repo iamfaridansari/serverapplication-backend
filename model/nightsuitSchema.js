@@ -28,38 +28,58 @@ const nightsuituserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  addressList: [
-    {
-      address: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  token: {
+    type: String,
+  },
+  address: Object,
 });
 
 nightsuituserSchema.methods.generateToken = async function () {
   const token = jwt.sign({ _id: this._id }, process.env.secretkey);
-  this.tokens = this.tokens.concat({ token: token });
+  this.token = token;
   await this.save();
   return token;
 };
 
-const nightsuitaddressSchema = new mongoose.Schema({
-  house: String,
-  state: String,
-  city: String,
-  landmark: String,
-  pincode: Number,
-});
+nightsuituserSchema.methods.postAddress = async function (
+  email,
+  house,
+  state,
+  city,
+  landmark,
+  pincode
+) {
+  const newAddress = {
+    email,
+    house,
+    state,
+    city,
+    landmark,
+    pincode,
+  };
+  if (!this.address) {
+    this.address = [newAddress];
+    await this.save();
+  } else {
+    this.address = [...this.address, newAddress];
+    await this.save();
+  }
+  return newAddress;
+};
+
+nightsuituserSchema.methods.deleteAddress = async function (filtered) {
+  this.address = filtered;
+  await this.save();
+  return filtered;
+};
+
+// const nightsuitaddressSchema = new mongoose.Schema({
+//   house: String,
+//   state: String,
+//   city: String,
+//   landmark: String,
+//   pincode: Number,
+// });
 
 const nightsuitcouponSchema = new mongoose.Schema({
   name: String,
@@ -73,10 +93,10 @@ const nightsuitproducts = mongoose.model(
   nightsuitproductsSchema
 );
 const nightsuituser = mongoose.model("nightsuituser", nightsuituserSchema);
-const nightsuitaddress = mongoose.model(
-  "nightsuitaddress",
-  nightsuitaddressSchema
-);
+// const nightsuitaddress = mongoose.model(
+//   "nightsuitaddress",
+//   nightsuitaddressSchema
+// );
 const nightsuitcoupon = mongoose.model(
   "nightsuitcoupon",
   nightsuitcouponSchema
@@ -85,6 +105,6 @@ const nightsuitcoupon = mongoose.model(
 module.exports = {
   nightsuitproducts,
   nightsuituser,
-  nightsuitaddress,
+  // nightsuitaddress,
   nightsuitcoupon,
 };
