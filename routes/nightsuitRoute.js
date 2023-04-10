@@ -42,7 +42,6 @@ router.post(
   }
 );
 
-//
 router.get("/api/get/nightsuit/products", async (req, res) => {
   const products = await nightsuitproducts.find();
   try {
@@ -54,11 +53,20 @@ router.get("/api/get/nightsuit/products", async (req, res) => {
   }
 });
 
-//
 router.post("/api/delete/nightsuit/products", async (req, res) => {
   const { id } = req.body;
   await nightsuitproducts.findByIdAndDelete(id);
   res.status(200).json({ message: "Product deleted" });
+});
+
+router.get("/api/view/nightsuit/products/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await nightsuitproducts.findOne({ _id: id });
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 //

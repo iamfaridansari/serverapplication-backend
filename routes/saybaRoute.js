@@ -38,6 +38,16 @@ router.get("/api/get/sayba/form", async (req, res) => {
   }
 });
 
+router.get("/api/view/sayba/property/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await saybaGroupProperty.findOne({ _id: id });
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.delete("/api/delete/sayba/form", async (req, res) => {
   const { id } = req.body;
   await saybaGroupForm.findByIdAndDelete(id);
