@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const { saybaGroupForm, saybaGroupProperty } = require("../model/saybaSchema");
-const authentication = require("../middleware/verifyToken");
 //
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -69,7 +68,6 @@ router.post("/api/post/sayba/property", multipleUpload, async (req, res) => {
     city,
     possession,
     price,
-    classname,
     amenities,
     area,
     config,
@@ -86,7 +84,6 @@ router.post("/api/post/sayba/property", multipleUpload, async (req, res) => {
     !city ||
     !possession ||
     !price ||
-    !classname ||
     !amenities ||
     !area ||
     !config
@@ -101,7 +98,6 @@ router.post("/api/post/sayba/property", multipleUpload, async (req, res) => {
       city,
       possession,
       price,
-      classname,
       amenities: amenities2,
       area: area2,
       config: config2,
