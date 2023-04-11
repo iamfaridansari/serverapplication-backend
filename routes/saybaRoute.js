@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { saybaGroupForm, saybaGroupProperty } = require("../model/saybaSchema");
+const authentication = require("../middleware/verifyToken");
 //
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -41,21 +42,15 @@ router.post("/api/post/sayba/form", async (req, res) => {
 });
 
 router.get("/api/get/sayba/form", async (req, res) => {
-  const messages = await saybaGroupForm.find();
-  if (messages) {
-    res.status(200).json(messages);
-  } else {
-    return res.status(422).json({ message: "Failed to fetch" });
-  }
-});
-
-router.get("/api/view/sayba/property/:id", async (req, res) => {
-  const { id } = req.params;
   try {
-    const product = await saybaGroupProperty.findOne({ _id: id });
-    res.status(200).json(product);
+    const messages = await saybaGroupForm.find();
+    if (messages) {
+      res.status(200).json(messages);
+    } else {
+      return res.status(422).json({ message: "Failed to fetch" });
+    }
   } catch (error) {
-    console.log(error);
+    return res.status(500).json(error);
   }
 });
 
@@ -127,6 +122,16 @@ router.get("/api/get/sayba/property", async (rer, res) => {
     } else {
       return res.status(422).json({ message: "Failed to fetch properties" });
     }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/api/view/sayba/property/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await saybaGroupProperty.findOne({ _id: id });
+    res.status(200).json(product);
   } catch (error) {
     console.log(error);
   }

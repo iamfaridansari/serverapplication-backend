@@ -1,7 +1,7 @@
 const router = require("express").Router();
+const authentication = require("../middleware/verifyToken");
 const admin = require("../model/adminSchema");
 const jwt = require("jsonwebtoken");
-const authentication = require("../middleware/verifyToken");
 
 router.post("/api/post/admin/signup", async (req, res) => {
   const { username, password, secretkey } = req.body;
@@ -62,8 +62,16 @@ router.post("/api/post/admin/login", async (req, res) => {
   }
 });
 
-router.get("/test", authentication, (req, res) => {
-  res.send("Hello world");
+router.get("/auth", authentication, (req, res) => {
+  try {
+    if (req.user) {
+      res.status(200).json("Authentication successful");
+    } else {
+      return res.status(422).json("Authentication failed");
+    }
+  } catch (error) {
+    res.status(500).json("Authentication failed");
+  }
 });
 
 module.exports = router;

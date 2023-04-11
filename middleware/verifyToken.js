@@ -6,8 +6,9 @@ function authentication(req, res, next) {
     return res.status(422).json({ message: "Authentication failed" });
   }
   try {
-    const verified = jwt.verify(token, process.env.secretkey);
-    console.log(verified);
+    const splitToken = token.split(" ")[1];
+    const verified = jwt.verify(splitToken, process.env.secretkey);
+    req.user = verified;
     next();
   } catch (error) {
     res.status(500).json(error);
