@@ -22,6 +22,7 @@ const port = process.env.port;
 
 require("./database/connection");
 
+app.use(require("./routes/adminRoute"));
 app.use(require("./routes/saybaRoute"));
 app.use(require("./routes/delhidarbarRoute"));
 app.use(require("./routes/kapbrosRoute"));

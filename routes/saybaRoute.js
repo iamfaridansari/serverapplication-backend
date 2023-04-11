@@ -1,13 +1,24 @@
 const router = require("express").Router();
 const { saybaGroupForm, saybaGroupProperty } = require("../model/saybaSchema");
+//
 const multer = require("multer");
-const upload = multer({ dest: "./uploads" });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix);
+  },
+});
+const upload = multer({ storage: storage });
 const multipleUpload = upload.fields([
   { name: "image1" },
   { name: "image2" },
   { name: "image3" },
   { name: "image4" },
 ]);
+//
 
 router.post("/api/post/sayba/form", async (req, res) => {
   const { name, email, mobile, subject, query } = req.body;
