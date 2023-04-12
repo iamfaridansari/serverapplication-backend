@@ -24,17 +24,50 @@ const saybaGroupFormSchema = new mongoose.Schema({
 });
 
 const saybaGroupPropertySchema = new mongoose.Schema({
-  name: String,
-  developer: String,
-  state: String,
-  city: String,
-  possession: String,
-  price: String,
-  class: String,
-  images: Object,
-  amenities: Object,
-  area: Object,
-  config: Object,
+  name: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  possession: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  desc: {
+    type: String,
+    required: true,
+  },
+  amenities: {
+    type: Array,
+    required: true,
+  },
+  area: {
+    type: Array,
+    required: true,
+  },
+  config: {
+    type: Array,
+    required: true,
+  },
+  images: {
+    type: Array,
+    required: true,
+  },
 });
 
 const saybaGroupForm = mongoose.model("saybaGroupForm", saybaGroupFormSchema);
