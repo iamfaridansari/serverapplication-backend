@@ -15,6 +15,9 @@ app.use(
   })
 );
 
+const cookieParser = require("cookie-parser")
+app.use(cookieParser())
+
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 

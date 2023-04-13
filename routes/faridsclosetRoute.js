@@ -1,7 +1,12 @@
 const router = require("express").Router();
-const faridscloset = require("../model/faridsclosetSchema");
+const {
+  faridscloset,
+  faridsclosetuser,
+} = require("../model/faridsclosetSchema");
 const multer = require("multer");
 const upload = multer({ dest: "./uploads" });
+const jwt = require("jsonwebtoken");
+const authentication = require("../middleware/verifyToken");
 
 router.post(
   "/api/post/faridscloset/products",
@@ -50,6 +55,71 @@ router.post("/api/delete/faridscloset/products", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+  }
+});
+
+//
+router.post("/api/signup/faridcloset/user", async (req, res) => {
+  const { name, email, mobile, password } = req.body;
+  if (!name || !email || !mobile || !password) {
+    return res.status(422).json({ message: "Enter complete details" });
+  }
+  //
+  try {
+    const userExist = await faridsclosetuser.findOne({ email: email });
+    if (userExist) {
+      return res.status(422).json({ message: "Email address already in use." });
+    } else {
+      const newUser = new faridsclosetuser({ name, email, mobile, password });
+      await newUser.save();
+      res
+        .status(200)
+        .json({ message: "Account created. Please login to continue." });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+//
+router.post("/api/login/faridcloset/user", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(422).json({ message: "Enter complete details" });
+  } else {
+    try {
+      const userExist = await faridsclosetuser.findOne({ email: email });
+      if (!userExist) {
+        return res.status(422).json({ message: "Account not found" });
+      }
+      if (userExist) {
+        if (userExist.password === password) {
+          const token = jwt.sign({ id: userExist.id }, process.env.secretkey);
+          res.cookie("faridclosetuser", token, {
+            httpOnly: true,
+          });
+          res.status(200).json({ message: "Login successful", token: token });
+        } else {
+          return res.status(422).json({ message: "Login failed" });
+        }
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+});
+
+router.get("/api/get/faridcloset/user", authentication, async (req, res) => {
+  try {
+    if (req.user) {
+      const userExist = await faridsclosetuser.findById(req.user.id);
+      const { password, ...others } = userExist._doc;
+      res.status(200).json(others);
+    } else {
+      return res.status(422).json("Authentication failed");
+    }
+  } catch (error) {
+    res.status(500).json("Authentication failed");
   }
 });
 

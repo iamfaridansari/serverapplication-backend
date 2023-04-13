@@ -9,5 +9,34 @@ const faridsclosetSchema = new mongoose.Schema({
   category: String,
 });
 
+//
+const faridsclosetUserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  mobile: {
+    type: Number,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: Array,
+    required: false,
+  },
+});
+
 const faridscloset = mongoose.model("faridscloset", faridsclosetSchema);
-module.exports = faridscloset;
+const faridsclosetuser = mongoose.model(
+  "faridsclosetuser",
+  faridsclosetUserSchema
+);
+module.exports = { faridscloset, faridsclosetuser };
