@@ -6,7 +6,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("Database connected".bgGreen);
+    console.log("Database connected".america);
   })
   .catch((error) => {
     console.log(error);

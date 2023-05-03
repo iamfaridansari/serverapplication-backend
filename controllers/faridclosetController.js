@@ -53,6 +53,16 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// edit product
+const editProduct = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const options = { new: true };
+
+  const result = await faridscloset.findByIdAndUpdate(id, updates, options);
+  res.status(200).json(result);
+};
+
 // user signup
 const userSignup = async (req, res) => {
   const { name, email, mobile, password } = req.body;
@@ -90,9 +100,6 @@ const userLogin = async (req, res) => {
       if (userExist) {
         if (userExist.password === password) {
           const token = jwt.sign({ id: userExist.id }, process.env.secretkey);
-          res.cookie("faridclosetuser", token, {
-            httpOnly: true,
-          });
           res.status(200).json({ message: "Login successful", token: token });
         } else {
           return res.status(422).json({ message: "Login failed" });
@@ -123,6 +130,7 @@ module.exports = {
   postProducts,
   getProducts,
   deleteProduct,
+  editProduct,
   userSignup,
   userLogin,
   authUser,

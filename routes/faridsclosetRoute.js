@@ -7,6 +7,7 @@ const {
   postProducts,
   getProducts,
   deleteProduct,
+  editProduct,
   userSignup,
   userLogin,
   authUser,
@@ -21,6 +22,8 @@ router.post(
 router.get("/get/faridscloset/products", getProducts);
 
 router.post("/delete/faridscloset/products", deleteProduct);
+
+router.put("/edit/faridscloset/products/:id", editProduct);
 
 router.post("/signup/faridcloset/user", userSignup);
 

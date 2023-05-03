@@ -33,6 +33,7 @@ const kapbrosRoute = require("./routes/kapbrosRoute");
 const faridclosetRoute = require("./routes/faridsclosetRoute");
 const nightsuitRoute = require("./routes/nightsuitRoute");
 const multistepformRoute = require("./routes/multistepformRoute");
+const blogRoute = require("./routes/blogRoute");
 
 app.use("/api/", adminRoute);
 app.use("/api/", saybaRoute);
@@ -41,9 +42,10 @@ app.use("/api/", kapbrosRoute);
 app.use("/api/", faridclosetRoute);
 app.use("/api/", nightsuitRoute);
 app.use("/api/", multistepformRoute);
+app.use("/api/", blogRoute);
 
 //
 const colors = require("colors");
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`.bgGreen);
+  console.log(`Server is running on port ${port}`.america);
 });
