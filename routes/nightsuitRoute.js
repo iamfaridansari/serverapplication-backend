@@ -54,7 +54,7 @@ router.post("/signup/nightsuit/user", userSignup);
 
 router.post("/login/nightsuit/user", userLogin);
 
-router.post("/get/nightsuit/user", authentication, authUser);
+router.get("/auth/nightsuit/user", authentication, authUser);
 
 //
 router.post("/post/nightsuit/address", postAddress);

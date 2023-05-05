@@ -28,18 +28,8 @@ const nightsuituserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  token: {
-    type: String,
-  },
   address: Object,
 });
-
-nightsuituserSchema.methods.generateToken = async function () {
-  const token = jwt.sign({ _id: this._id }, process.env.secretkey);
-  this.token = token;
-  await this.save();
-  return token;
-};
 
 nightsuituserSchema.methods.postAddress = async function (
   email,

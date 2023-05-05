@@ -3,6 +3,7 @@ const {
   nightsuituser,
   nightsuitcoupon,
 } = require("../model/nightsuitSchema");
+const jwt = require("jsonwebtoken");
 
 // post products
 const postProducts = async (req, res) => {
@@ -87,26 +88,23 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(422).json({ message: "Enter complete details" });
-  } else {
-    try {
-      const userExist = await nightsuituser.findOne({ email: email });
-      if (!userExist) {
-        return res.status(422).json({ message: "Account not found" });
+  }
+  try {
+    const userExist = await nightsuituser.findOne({ email: email });
+    if (!userExist) {
+      return res.status(422).json({ message: "User does not exist" });
+    } else {
+      if (userExist.password !== password) {
+        return res.status(422).json({ message: "Incorrect credentials" });
+      } else {
+        const token = jwt.sign({ id: userExist._id }, process.env.secretkey);
+        return res
+          .status(200)
+          .json({ message: "Login successful", token: token });
       }
-      if (userExist) {
-        if (userExist.password === password) {
-          const token = jwt.sign({ id: userExist.id }, process.env.secretkey);
-          res.cookie("nightsuituser", token, {
-            httpOnly: true,
-          });
-          res.status(200).json({ message: "Login successful", token: token });
-        } else {
-          return res.status(422).json({ message: "Login failed" });
-        }
-      }
-    } catch (error) {
-      res.status(500).json(error);
     }
+  } catch (error) {
+    return res.status(500).json(error);
   }
 };
 
