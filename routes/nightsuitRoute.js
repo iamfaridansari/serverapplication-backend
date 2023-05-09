@@ -14,6 +14,7 @@ const {
   deleteCoupon,
   applyCoupon,
   authUser,
+  postOrder,
 } = require("../controllers/nightsuitController");
 const authentication = require("../middleware/verifyToken");
 const {
@@ -71,5 +72,8 @@ router.get("/get/nightsuit/coupon", getCoupon);
 router.delete("/delete/nightsuit/coupon", deleteCoupon);
 
 router.post("/apply/nightsuit/coupon", applyCoupon);
+
+//
+router.post("/post/nightsuit/orders", postOrder);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const {
   nightsuitproducts,
   nightsuituser,
   nightsuitcoupon,
+  nightsuitorders,
 } = require("../model/nightsuitSchema");
 const jwt = require("jsonwebtoken");
 
@@ -125,22 +126,10 @@ const authUser = async (req, res) => {
 
 // post address
 const postAddress = async (req, res) => {
-  const { email, token, house, state, city, landmark, pincode } = req.body;
+  const { email, house, state, city, landmark, pincode } = req.body;
   const userExist = await nightsuituser.findOne({ email: email });
-  if (!email || !token) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed. Please login.1" });
-  }
-  if (!userExist) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed. Please login.2" });
-  }
-  if (userExist.token !== token) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed. Please login.3" });
+  if (!userExist || !email) {
+    return res.status(404).json({ message: "Authentication failed" });
   } else {
     if (!house || !state || !city || !pincode) {
       return res.status(422).json({ message: "Enter complete details" });
@@ -272,6 +261,21 @@ const applyCoupon = async (req, res) => {
   }
 };
 
+//
+const postOrder = async (req, res) => {
+  const { user, address, cart, summary } = req.body;
+  if (!user || !address || !cart || !summary) {
+    return res.status(422).json({ message: "Enter complete details" });
+  }
+  try {
+    const newOrder = new nightsuitorders({ user, address, cart, summary });
+    await newOrder.save();
+    return res.status(200).json({ message: "Your order has been placed" });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   postProducts,
   getProducts,
@@ -287,4 +291,5 @@ module.exports = {
   getCoupon,
   deleteCoupon,
   applyCoupon,
+  postOrder,
 };

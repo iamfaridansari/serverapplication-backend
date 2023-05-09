@@ -31,6 +31,25 @@ const nightsuituserSchema = new mongoose.Schema({
   address: Object,
 });
 
+const nightsuitordersSchema = new mongoose.Schema({
+  user: {
+    type: Object,
+    required: true,
+  },
+  address: {
+    type: Object,
+    required: true,
+  },
+  cart: {
+    type: Array,
+    required: true,
+  },
+  summary: {
+    type: Object,
+    required: true,
+  },
+});
+
 nightsuituserSchema.methods.postAddress = async function (
   email,
   house,
@@ -63,14 +82,6 @@ nightsuituserSchema.methods.deleteAddress = async function (filtered) {
   return filtered;
 };
 
-// const nightsuitaddressSchema = new mongoose.Schema({
-//   house: String,
-//   state: String,
-//   city: String,
-//   landmark: String,
-//   pincode: Number,
-// });
-
 const nightsuitcouponSchema = new mongoose.Schema({
   name: String,
   discount: Number,
@@ -83,18 +94,22 @@ const nightsuitproducts = mongoose.model(
   nightsuitproductsSchema
 );
 const nightsuituser = mongoose.model("nightsuituser", nightsuituserSchema);
-// const nightsuitaddress = mongoose.model(
-//   "nightsuitaddress",
-//   nightsuitaddressSchema
-// );
+
 const nightsuitcoupon = mongoose.model(
   "nightsuitcoupon",
   nightsuitcouponSchema
 );
 
+const nightsuitorders = mongoose.model(
+  "nightsuitorders",
+  nightsuitordersSchema
+);
+
+//
+
 module.exports = {
   nightsuitproducts,
   nightsuituser,
-  // nightsuitaddress,
+  nightsuitorders,
   nightsuitcoupon,
 };
